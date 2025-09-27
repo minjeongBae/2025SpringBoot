@@ -6,7 +6,7 @@
         SELECT BOARD.BOARD_ID AS boardId,
                 BOARD.WRITER,
                CASE
-                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   WHEN CREATE_DATE IS NULL THEN '-'
                    ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
                    END AS createDate,
                CASE
@@ -23,7 +23,7 @@
     <select id="searchBoards" resultType="org.example.boards.board.DTO.BoardDTO">
         SELECT BOARD.BOARD_ID AS boardId, BOARD.WRITER,
                CASE
-                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   WHEN CREATE_DATE IS NULL THEN '-'
                    ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
                    END AS createDate,
                CASE
@@ -53,7 +53,7 @@
             BOARD.WRITER,
             BOARD.VIEWS,
             CASE
-                WHEN UPDATE_DATE IS NULL THEN '-'
+                WHEN CREATE_DATE IS NULL THEN '-'
                 ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
                 END AS createDate,
             CASE
@@ -85,7 +85,7 @@
                 , WRITER
                 , VIEWS
                 , CASE
-                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   WHEN CREATE_DATE IS NULL THEN '-'
                    ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
                   END AS createDate
                , CASE
@@ -100,4 +100,20 @@
         INSERT INTO COMMENT (BOARD_ID, WRITER, CONTENT, CREATE_DATE)
         VALUES (#{boardId}, #{writer}, #{content}, NOW())
     </insert>
+
+    <insert id="insertBoard">
+        INSERT INTO BOARD (WRITER, CONTENT, CREATE_DATE, TITLE, CATEGORY)
+        VALUES (#{writer}, #{content}, NOW(), #{title}, #{category})
+    </insert>
+
+    <delete id="deleteBoard">
+        DELETE FROM BOARD WHERE BOARD_ID = #{boardId};
+    </delete>
+
+    <select id="checkPassword" resultType="String">
+        SELECT CASE WHEN COUNT(1) > 0 THEN 'Y'
+                    ELSE 'N' END AS RESULT
+        FROM USER
+        WHERE PASSWORD = HEX(AES_ENCRYPT(#{password}, #{key}));
+    </select>
 </mapper>

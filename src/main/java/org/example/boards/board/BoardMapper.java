@@ -20,4 +20,7 @@ public interface BoardMapper {
     List<CommentDTO> showComments(@Param("BOARD_ID") int BOARD_ID);
     BoardDTO showBoard(@Param("BOARD_ID") int BOARD_ID);
     int insertComment(CommentDTO commentDTO);
+    int insertBoard(BoardDTO boardDTO);
+    String checkPassword(@Param("password") String password, @Param("key")String key);
+    int deleteBoard(@Param("boardId") int boardId);
 }
