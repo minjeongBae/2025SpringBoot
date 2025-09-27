@@ -1,16 +1,102 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ssii6
-  Date: 2025-09-26
-  Time: AM 3:05
-  To change this template use File | Settings | File Templates.
---%>
+<%@ page import="org.example.boards.board.DTO.CategoryDTO" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+    <style>
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+    </style>
     <title>등록</title>
 </head>
 <body>
-
+    <h1>게시판 - 등록</h1>
+    <br/>
+    <div style="margin: 20px; padding: 10px">
+        <form id="insertForm" action="/insert-board" method="post">
+            <table style="border-collapse: collapse; padding: 15px">
+                <tr>
+                    <td style="background-color: darkgray">카테고리</td>
+                    <td>
+                        <select name="category" size="1">
+                            <option value="">선택하세요.</option>
+                            <%
+                                List<CategoryDTO> categories = (List<CategoryDTO>) request.getAttribute("categories");
+                                for(CategoryDTO category : categories) {
+                            %>
+                            <option value="<%=category.getCd()%>"><%= category.getName()%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: darkgray">작성자</td>
+                    <td><input type="text" name="writer" id="writer"></td>
+                </tr>
+                <tr>
+                    <td style="background-color: darkgray">비밀번호</td>
+                    <td><input type="password" name="password"> &nbsp;
+                        <input type="password" name="passwordCheck">
+                        <button type="button" onclick="checkPW(password, passwordCheck)">확인</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: darkgray">제목</td>
+                    <td><input type="text" name="title" id="title"></td>
+                </tr>
+                <tr>
+                    <td style="background-color: darkgray">내용</td>
+                    <td>
+                        <textarea name="content" rows="5" cols="50" id="content"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <button type="submit" id="submitBtn">제출</button>
+        </form>
+        <button onclick="cancel()">취소</button>
+    </div>
 </body>
+
+<script>
+    function cancel(){
+        window.location.href = "/list.jsp";
+    }
+
+    function checkPW(pw,pwCheck){
+        if(pw.value === pwCheck.value){
+            alert("확인되었씁니다.");
+            document.getElementById("submitBtn").disabled = false;
+        } else {
+            alert("비밀번호가 일치하지 않습니다.");
+            document.getElementById("submitBtn").disabled = true;
+
+        }
+    }
+
+    window.onload = function(){
+        document.getElementById("submitBtn").disabled = true;
+    }
+
+    document.getElementById("submitBtn").addEventListener("submit", function(event) {
+        // event 인 submit 을 막으려면 파라미터로 받아야 함
+        if(document.getElementById("writer")==null
+            || document.getElementById("writer").value === ""
+            || document.getElementById("title")==null
+            || document.getElementById("title").value === ""
+            || document.getElementById("content")==null
+            || document.getElementById("content").value === ""
+            || document.getElementById("password")==null
+            || document.getElementById("password").value === "") {
+            alert("필수항목 누락");
+            document.getElementById("submitBtn").disabled = true;
+            event.preventDefault(); // 제출 막기
+        }
+    });
+
+</script>
 </html>

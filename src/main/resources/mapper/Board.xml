@@ -2,11 +2,102 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.boards.board.BoardMapper">
-
-    <select id="findAllBoards" resultType="org.example.boards.board.BoardDTO">
-        SELECT POST_ID, WRITER, CREATE_DATE, UPDATE_DATE,
-               TITLE, CATEGORY, CONTENT
-        FROM BOARD;
+    <select id="findAllBoards" resultType="org.example.boards.board.DTO.BoardDTO">
+        SELECT BOARD.BOARD_ID AS boardId,
+                BOARD.WRITER,
+               CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
+                   END AS createDate,
+               CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
+                   END AS updateDate,
+            BOARD.TITLE,
+                CATEGORY.NAME AS CATEGORY,
+                BOARD.CONTENT
+        FROM BOARD
+        INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY;
     </select>
 
+    <select id="searchBoards" resultType="org.example.boards.board.DTO.BoardDTO">
+        SELECT BOARD.BOARD_ID AS boardId, BOARD.WRITER,
+               CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
+                   END AS createDate,
+               CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
+                   END AS updateDate,
+               BOARD.TITLE, CATEGORY.NAME AS CATEGORY, BOARD.CONTENT
+        FROM BOARD
+        INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
+        WHERE CREATE_DATE <![CDATA[>=]]> IFNULL(#{headDate}, '2000-01-01')
+          AND CREATE_DATE <![CDATA[<=]]> IFNULL(#{tailDate}, '9999-01-01')
+          AND (TITLE LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%')
+               OR CONTENT LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%')
+               OR WRITER LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%'));
+    </select>
+
+    <select id="findAllCategories" resultType="org.example.boards.board.DTO.CategoryDTO">
+        SELECT CD, NAME FROM CATEGORY;
+    </select>
+
+
+    <select id="showDetailView" resultType="org.example.boards.board.DTO.BoardDTO">
+        SELECT
+            BOARD.BOARD_ID as boardId,
+            BOARD.TITLE,
+            CATEGORY.NAME AS CATEGORY,
+            BOARD.WRITER,
+            BOARD.VIEWS,
+            CASE
+                WHEN UPDATE_DATE IS NULL THEN '-'
+                ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
+                END AS createDate,
+            CASE
+                WHEN UPDATE_DATE IS NULL THEN '-'
+                ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
+                END AS updateDate,
+            BOARD.CONTENT
+        FROM BOARD
+        INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
+    </select>
+
+    <select id="showComments" resultType="org.example.boards.board.DTO.CommentDTO">
+        SELECT
+                COMMENT_ID as commentId,
+                CONTENT,
+                WRITER,
+                CASE
+                    WHEN CREATE_DATE IS NULL THEN '-'
+                    ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
+                END AS createDate
+        FROM COMMENT
+        WHERE BOARD_ID = #{BOARD_ID}
+    </select>
+
+    <select id = "showBoard" resultType="org.example.boards.board.DTO.BoardDTO">
+        SELECT BOARD_ID as boardId
+                , TITLE
+                , CATEGORY
+                , WRITER
+                , VIEWS
+                , CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
+                  END AS createDate
+               , CASE
+                   WHEN UPDATE_DATE IS NULL THEN '-'
+                   ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
+                  END AS updateDate
+                , CONTENT
+        FROM BOARD WHERE BOARD_ID = #{BOARD_ID}
+    </select>
+
+    <insert id="insertComment" >
+        INSERT INTO COMMENT (BOARD_ID, WRITER, CONTENT, CREATE_DATE)
+        VALUES (#{boardId}, #{writer}, #{content}, NOW())
+    </insert>
 </mapper>
