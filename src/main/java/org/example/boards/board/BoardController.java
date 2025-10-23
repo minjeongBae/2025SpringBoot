@@ -24,6 +24,7 @@ public class BoardController {
     @GetMapping(value = {"/", "list"})
     public String init(@ModelAttribute SearchKeyDTO searchKey,
                        Model model) {
+
         List<BoardDTO> boards = boardService.getBoards(searchKey);
         model.addAttribute("boards", boards);
 

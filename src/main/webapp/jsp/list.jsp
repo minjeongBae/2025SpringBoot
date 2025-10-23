@@ -1,6 +1,4 @@
-<%@ page import="org.example.boards.board.Entity.Board" %>
 <%@ page import="java.util.List" %>
-<%@ page import="org.example.boards.board.Entity.Category" %>
 <%@ page import="org.example.boards.board.DTO.CategoryDTO" %>
 <%@ page import="org.example.boards.board.DTO.BoardDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -27,9 +25,9 @@
     <form action="/list" method="get">
         등록일  <input type="date" name = "headDate" value="">
         <input type="date" name = "tailDate">
-        <input type="text" name = "searchWord">
+        <input type="text" name = "word">
         <select name="category" size="1">
-            <option value="">선택하세요.</option>
+            <option value="0">선택하세요.</option>
             <%
                 List<CategoryDTO> categories = (List<CategoryDTO>) request.getAttribute("categories");
                 for(CategoryDTO category : categories) {

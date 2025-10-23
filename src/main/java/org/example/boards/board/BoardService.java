@@ -10,6 +10,7 @@ import org.example.boards.board.Entity.Category;
 import org.example.boards.board.Mapper.BoardMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 @Service
@@ -20,6 +21,7 @@ public class BoardService {
     final BoardMapper boardMapper;
 
     public List<BoardDTO> getBoards(SearchKeyDTO searchKey) {
+
         List<Board> boards;
         String headDate = "20000101";
         String tailDate = "29991231";
