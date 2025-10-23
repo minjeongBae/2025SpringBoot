@@ -1,5 +1,5 @@
-<%@ page import="org.example.boards.board.DTO.BoardDTO" %>
-<%@ page import="org.example.boards.board.DTO.CommentDTO" %>
+<%@ page import="org.example.boards.board.Entity.Board" %>
+<%@ page import="org.example.boards.board.Entity.Comment" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -10,7 +10,7 @@
 
     <h1>게시판 - 보기</h1>
     <%
-        BoardDTO board = (BoardDTO) request.getAttribute("board");
+        Board board = (Board) request.getAttribute("board");
         String updateDate = board.getUpdateDate()==null ? "-" : board.getUpdateDate()+"";
     %>
     <div style="display: flex; gap: 20px; width: 70%">
@@ -30,8 +30,8 @@
 
     <div style="margin-top:20px; background-color: darkgray;width: 70%; height: auto;">
         <%
-            List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
-            for(CommentDTO comment : comments){
+            List<Comment> comments = (List<Comment>) request.getAttribute("comments");
+            for(Comment comment : comments){
         %>
         <div>
             <span style="font-size: small"><%= comment.getCreateDate()%></span><br/>

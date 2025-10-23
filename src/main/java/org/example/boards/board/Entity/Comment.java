@@ -1,11 +1,11 @@
-package org.example.boards.board.DTO;
+package org.example.boards.board.Entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CommentDTO {
+public class Comment {
     private int boardId;
     private int commentId;
     private String content;

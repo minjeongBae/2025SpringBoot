@@ -1,4 +1,4 @@
-<%@ page import="org.example.boards.board.DTO.CategoryDTO" %>
+<%@ page import="org.example.boards.board.Entity.Category" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -23,8 +23,8 @@
                         <select name="category" size="1">
                             <option value="">선택하세요.</option>
                             <%
-                                List<CategoryDTO> categories = (List<CategoryDTO>) request.getAttribute("categories");
-                                for(CategoryDTO category : categories) {
+                                List<Category> categories = (List<Category>) request.getAttribute("categories");
+                                for(Category category : categories) {
                             %>
                             <option value="<%=category.getCd()%>"><%= category.getName()%></option>
                             <%

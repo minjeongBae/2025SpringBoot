@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.boards.board.BoardMapper">
-    <select id="findAllBoards" resultType="org.example.boards.board.DTO.BoardDTO">
-        SELECT BOARD.BOARD_ID AS boardId,
-                BOARD.WRITER,
-               CASE
-                   WHEN CREATE_DATE IS NULL THEN '-'
-                   ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
-                   END AS createDate,
-               CASE
-                   WHEN UPDATE_DATE IS NULL THEN '-'
-                   ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
-                   END AS updateDate,
-            BOARD.TITLE,
-                CATEGORY.NAME AS CATEGORY,
-                BOARD.CONTENT
-        FROM BOARD
-        INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY;
-    </select>
+<mapper namespace="org.example.boards.board.DAO.BoardRepository">
 
-    <select id="searchBoards" resultType="org.example.boards.board.DTO.BoardDTO">
+    <select id="getBoards" resultType="org.example.boards.board.Entity.Board">
         SELECT BOARD.BOARD_ID AS boardId, BOARD.WRITER,
                CASE
                    WHEN CREATE_DATE IS NULL THEN '-'
@@ -30,7 +13,9 @@
                    WHEN UPDATE_DATE IS NULL THEN '-'
                    ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
                    END AS updateDate,
-               BOARD.TITLE, CATEGORY.NAME AS CATEGORY, BOARD.CONTENT
+               BOARD.TITLE,
+               CATEGORY.NAME AS CATEGORY,
+               BOARD.CONTENT
         FROM BOARD
         INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
         WHERE CREATE_DATE <![CDATA[>=]]> IFNULL(#{headDate}, '2000-01-01')
@@ -40,12 +25,12 @@
                OR WRITER LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%'));
     </select>
 
-    <select id="findAllCategories" resultType="org.example.boards.board.DTO.CategoryDTO">
+    <select id="getCategories" resultType="org.example.boards.board.Entity.Category">
         SELECT CD, NAME FROM CATEGORY;
     </select>
 
 
-    <select id="showDetailView" resultType="org.example.boards.board.DTO.BoardDTO">
+    <select id="showDetailView" resultType="org.example.boards.board.Entity.Board">
         SELECT
             BOARD.BOARD_ID as boardId,
             BOARD.TITLE,
@@ -65,7 +50,7 @@
         INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
     </select>
 
-    <select id="showComments" resultType="org.example.boards.board.DTO.CommentDTO">
+    <select id="showComments" resultType="org.example.boards.board.Entity.Comment">
         SELECT
                 COMMENT_ID as commentId,
                 CONTENT,
@@ -78,7 +63,7 @@
         WHERE BOARD_ID = #{BOARD_ID}
     </select>
 
-    <select id = "showBoard" resultType="org.example.boards.board.DTO.BoardDTO">
+    <select id = "showBoard" resultType="org.example.boards.board.Entity.Board">
         SELECT BOARD_ID as boardId
                 , TITLE
                 , CATEGORY
@@ -116,4 +101,10 @@
         FROM USER
         WHERE PASSWORD = HEX(AES_ENCRYPT(#{password}, #{key}));
     </select>
+
+    <update id="increaseViews">
+        UPDATE BOARD
+        SET VIEWS = VIEWS+1
+        WHERE BOARD_ID = #{boardId}
+    </update>
 </mapper>

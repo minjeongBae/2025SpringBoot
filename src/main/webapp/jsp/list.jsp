@@ -1,6 +1,8 @@
-<%@ page import="org.example.boards.board.DTO.BoardDTO" %>
+<%@ page import="org.example.boards.board.Entity.Board" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.example.boards.board.Entity.Category" %>
 <%@ page import="org.example.boards.board.DTO.CategoryDTO" %>
+<%@ page import="org.example.boards.board.DTO.BoardDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -22,7 +24,7 @@
 <body>
     <h1>자유 게시판 - 목록</h1>
 
-    <form action="/board-search" method="post">
+    <form action="/list" method="get">
         등록일  <input type="date" name = "headDate" value="">
         <input type="date" name = "tailDate">
         <input type="text" name = "searchWord">

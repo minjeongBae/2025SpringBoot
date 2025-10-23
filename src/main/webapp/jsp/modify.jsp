@@ -1,4 +1,4 @@
-<%@ page import="org.example.boards.board.DTO.BoardDTO" %>
+<%@ page import="org.example.boards.board.Entity.Board" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
@@ -11,7 +11,7 @@
 <h4>기본정보</h4>
 
 <%
-    BoardDTO board = (BoardDTO) request.getAttribute("board");
+    Board board = (Board) request.getAttribute("board");
 %>
 <form action="/modify-board" method="post">
     <table style="width: 80%; height: auto; margin: 20px; padding: 10px">
