@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="org.example.boards.board.DTO.CategoryDTO" %>
-<%@ page import="org.example.boards.board.DTO.BoardDTO" %>
+<%@ page import="org.example.boards.board.DTO.BoardListDTO" %>
+<%@ page import="org.example.boards.board.DTO.BoardListDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <html>
@@ -42,7 +43,7 @@
 
     <div style="margin: 15px">
         <%
-            List<BoardDTO> boards = (List<BoardDTO>) request.getAttribute("boards");
+            List<BoardListDTO> boards = (List<BoardListDTO>) request.getAttribute("boards");
         %>
         <span>총 <%=boards.size()%>건</span>
         <table style="margin: 10px">
@@ -59,7 +60,7 @@
             </thead>
             <tbody>
             <%
-                for(BoardDTO board : boards){
+                for(BoardListDTO board : boards){
                     String updateDate = board.getUpdateDate() == null ? "-" : board.getUpdateDate()+"" ;
             %>
                 <tr onclick="showDetail(<%=board.getBoardId()%>)">

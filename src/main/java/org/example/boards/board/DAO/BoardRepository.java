@@ -19,9 +19,16 @@ public interface BoardRepository {
                              @Param("searchWord") String searchKey);
 
     List<Category> getCategories();
-    List<Comment> showComments(@Param("BOARD_ID") int BOARD_ID);
-    Board showBoard(@Param("BOARD_ID") int BOARD_ID);
+
+    int isRealBoard(@Param("boardId") int boardId);
+
+    Board getBoard(@Param("boardId") int boardId);
+
+    List<Comment> getComments(@Param("boardId") int boardId);
+
     int insertComment(Comment comment);
+
+    /// 아직 안씀 ////
     int insertBoard(Board board);
     String checkPassword(@Param("password") String password, @Param("key")String key);
     int deleteBoard(@Param("boardId") int boardId);

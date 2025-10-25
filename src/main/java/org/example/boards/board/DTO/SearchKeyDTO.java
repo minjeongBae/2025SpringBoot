@@ -1,13 +1,11 @@
 package org.example.boards.board.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Setter
-@Getter
+@Data
 public class SearchKeyDTO {
     private String word;
 

@@ -1,11 +1,9 @@
 package org.example.boards.board.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-public class BoardDTO {
+@Data
+public class BoardListDTO {
     private int boardId;
     private String title;
     private String category;

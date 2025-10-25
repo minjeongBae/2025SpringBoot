@@ -1,9 +1,8 @@
 package org.example.boards.board.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
+@Data
 public class CategoryDTO {
     private int cd;
     private String name;

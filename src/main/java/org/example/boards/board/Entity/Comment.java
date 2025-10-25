@@ -1,10 +1,8 @@
 package org.example.boards.board.Entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class Comment {
     private int boardId;
     private int commentId;

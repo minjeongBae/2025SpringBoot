@@ -29,8 +29,13 @@
         SELECT CD, NAME FROM CATEGORY;
     </select>
 
+    <select id="isRealBoard" resultType="int">
+        SELECT COUNT(*)
+        FROM BOARD
+        WHERE BOARD_ID = #{boardId}
+    </select>
 
-    <select id="showDetailView" resultType="org.example.boards.board.Entity.Board">
+    <select id="getBoard" resultType="org.example.boards.board.Entity.Board">
         SELECT
             BOARD.BOARD_ID as boardId,
             BOARD.TITLE,
@@ -48,9 +53,10 @@
             BOARD.CONTENT
         FROM BOARD
         INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
+        WHERE BOARD_ID = #{boardId}
     </select>
 
-    <select id="showComments" resultType="org.example.boards.board.Entity.Comment">
+    <select id="getComments" resultType="org.example.boards.board.Entity.Comment">
         SELECT
                 COMMENT_ID as commentId,
                 CONTENT,
@@ -60,30 +66,12 @@
                     ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
                 END AS createDate
         FROM COMMENT
-        WHERE BOARD_ID = #{BOARD_ID}
+        WHERE BOARD_ID = #{boardId}
     </select>
 
-    <select id = "showBoard" resultType="org.example.boards.board.Entity.Board">
-        SELECT BOARD_ID as boardId
-                , TITLE
-                , CATEGORY
-                , WRITER
-                , VIEWS
-                , CASE
-                   WHEN CREATE_DATE IS NULL THEN '-'
-                   ELSE DATE_FORMAT(CREATE_DATE, '%Y-%m-%d')
-                  END AS createDate
-               , CASE
-                   WHEN UPDATE_DATE IS NULL THEN '-'
-                   ELSE DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d')
-                  END AS updateDate
-                , CONTENT
-        FROM BOARD WHERE BOARD_ID = #{BOARD_ID}
-    </select>
-
-    <insert id="insertComment" >
+    <insert id="insertComment">
         INSERT INTO COMMENT (BOARD_ID, WRITER, CONTENT, CREATE_DATE)
-        VALUES (#{boardId}, #{writer}, #{content}, NOW())
+        VALUES (#{boardId}, "테스트", #{content}, NOW())
     </insert>
 
     <insert id="insertBoard">

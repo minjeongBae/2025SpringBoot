@@ -1,17 +1,30 @@
-<%@ page import="org.example.boards.board.Entity.Board" %>
-<%@ page import="org.example.boards.board.Entity.Comment" %>
+<%@ page import="org.example.boards.board.DTO.CommentDTO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.example.boards.board.DTO.BoardViewDTO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>게시물</title>
 </head>
 <body>
-
+    <script>
+        function goList() {
+            window.location.href = '/list';
+        }
+    </script>
     <h1>게시판 - 보기</h1>
+
+    <% if (request.getAttribute("errorMsg") != null) { %>
+    <script>
+
+        alert("<%= request.getAttribute("errorMsg") %>");
+        goList();
+    </script>
+    <% } %>
     <%
-        Board board = (Board) request.getAttribute("board");
-        String updateDate = board.getUpdateDate()==null ? "-" : board.getUpdateDate()+"";
+        if(request.getAttribute("board") != null) {
+            BoardViewDTO board = (BoardViewDTO) request.getAttribute("board");
+            String updateDate = board.getUpdateDate()==null ? "-" : board.getUpdateDate()+"";
     %>
     <div style="display: flex; gap: 20px; width: 70%">
         <span><%=board.getWriter()%></span>
@@ -30,8 +43,8 @@
 
     <div style="margin-top:20px; background-color: darkgray;width: 70%; height: auto;">
         <%
-            List<Comment> comments = (List<Comment>) request.getAttribute("comments");
-            for(Comment comment : comments){
+            List<CommentDTO> comments = (List<CommentDTO>) request.getAttribute("comments");
+            for(CommentDTO comment : comments){
         %>
         <div>
             <span style="font-size: small"><%= comment.getCreateDate()%></span><br/>
@@ -43,7 +56,6 @@
          %>
 
         <form style="padding: 15px" action="/view/insert-comment" method="post">
-            <input type="hidden" name="writer" value="ADMIN">
             <input type="hidden" name="boardId" value="<%=board.getBoardId()%>">
             <input type="text" name="content">
             <button type="submit">등록</button>
@@ -55,22 +67,19 @@
         <button style="margin-right: 10px" onclick="modifyBoard(<%= board.getBoardId()%>)">수정</button>
         <button onclick="deleteBoard(<%= board.getBoardId()%>)">삭제</button>
     </div>
-
+    <%
+        }
+    %>
 </body>
 </html>
 
 <script type="text/javascript">
     function modifyBoard(id) {
-        window.location.href = '/go-modify-board?boardId=' + id;
+        window.location.href = '/modify-board?boardId=' + id;
     }
 
     function deleteBoard(id) {
-        //window.location.href = '/go-delete-board?boardId=' + id;
-        window.open("/go-delete-board?boardId="+ id, "deleteWindow", "width=500,height=300,left=100,top=100");
+        window.open("/delete-board?boardId="+ id, "deleteWindow", "width=500,height=300,left=100,top=100");
 
-    }
-
-    function goList() {
-        window.location.href = '/';
     }
 </script>

@@ -1,14 +1,9 @@
-package org.example.boards.board.Entity;
+package org.example.boards.board.DTO;
 
 import lombok.Data;
 
 @Data
-public class Board {
-    /*
-       TODO @schema 알아보기
-       TODO @Valid / @NotNull
-       TODO error Handler
-    */
+public class BoardViewDTO {
     private int boardId;
     private String title;
     private String category;
