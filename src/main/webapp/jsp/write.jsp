@@ -12,12 +12,9 @@
     <title>등록</title>
 </head>
 <body>
-
-    <% if (request.getAttribute("errorMsg") != null) { %>
+    <% if(request.getAttribute("errorMsg") != null) { %>
     <script>
-
-        alert("<%= request.getAttribute("errorMsg") %>");
-        goList();
+        alert("${errorMsg}");
     </script>
     <% } %>
     <h1>게시판 - 등록</h1>
@@ -30,7 +27,7 @@
                     <td style="background-color: darkgray">카테고리</td>
                     <td>
                         <select name="category" size="1">
-                            <option value="">카테고리 선택</option>
+                            <option value="0">카테고리 선택</option>
                             <%
                                 List<CategoryDTO> categories = (List<CategoryDTO>) request.getAttribute("categories");
                                 for(CategoryDTO category : categories) {
@@ -66,9 +63,9 @@
                 <tr>
                     <td style="background-color: darkgray">파일첨부</td>
                     <td>
-                        <input type="file" name="firstFile"><br><br>
-                        <input type="file" name="secondFile"><br><br>
-                        <input type="file" name="thirdFile">
+                        <input type="file" name="files"><br><br>
+                        <input type="file" name="files"><br><br>
+                        <input type="file" name="files">
                     </td>
 
                 </tr>

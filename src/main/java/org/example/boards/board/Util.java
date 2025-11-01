@@ -1,6 +1,5 @@
 package org.example.boards.board;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +52,8 @@ public class Util {
         }
     }
 
+    // TODO 파일 테이블 분리 , 프로세스 분리
+    // TODO static 지양
     public static String[] multipartFileToString(MultipartFile file) {
         String[] result = new String[3]; // id, name, path
         if(!isRightFile(file)) {

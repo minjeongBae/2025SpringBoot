@@ -4,22 +4,20 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class NewBoardDTO
 {
-    // 게시물 등록을 위함
-    @NotNull
+    @NotNull(message = "제목은 필수값입니다.")
     String title;
-    @NotNull
+    @NotNull(message = "비밀번호는 필수값입니다.")
     String password;
-
-    String writer;
-    int category;
-
-    @NotNull
+    @NotNull(message = "내용은 필수값입니다.")
     String content;
 
-    MultipartFile firstFile;
-    MultipartFile secondFile;
-    MultipartFile thirdFile;
+    String writer;
+    int category = 0;
+    List<MultipartFile> files = new ArrayList<>();
 }

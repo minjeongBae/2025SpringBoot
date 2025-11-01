@@ -98,16 +98,21 @@
     <insert id="insertBoard" useGeneratedKeys="true" keyProperty="board.boardId" >
         INSERT INTO BOARD (
             TITLE, CONTENT, CREATE_DATE,
-            WRITER, CATEGORY, PASSWORD,
-            FIRST_FILE_ID,
-            FIRST_FILE_NAME,
-            FIRST_FILE_PATH
+            WRITER, CATEGORY, PASSWORD
         )
         VALUES (
                    #{board.title}, #{board.content}, NOW(),
-                   #{board.writer}, #{board.category}, HEX(AES_ENCRYPT(#{board.password}, #{key})),
-                   #{board.firstFileId}, #{board.firstFileName}, #{board.firstFilePath}
+                   #{board.writer}, #{board.category}, HEX(AES_ENCRYPT(#{board.password}, #{key}))
                )
+    </insert>
+
+    <insert id="insertFiles" parameterType="java.util.List">
+        INSERT INTO FILE (
+                           NAME, PATH, UUID, BOARD_ID
+        ) VALUES
+              <foreach collection="files" item="file"  separator="," >
+                  (#{file.name}, #{file.path}, #{file.uuid}, #{file.boardId})
+              </foreach>
     </insert>
 
     <select id="getMaxBoardId" resultType="int">

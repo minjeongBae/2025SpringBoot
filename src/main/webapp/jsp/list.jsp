@@ -24,6 +24,11 @@
     <a href="/" style="display: inline-block; text-decoration: none; color: inherit;">
         <h1>자유 게시판 - 목록</h1>
     </a>
+    <% if(request.getAttribute("errorMsg") != null) { %>
+    <script>
+        alert("${errorMsg}");
+    </script>
+    <% } %>
     <form action="/list" method="get">
         등록일  <input type="date" name = "headDate" value="">
         <input type="date" name = "tailDate">

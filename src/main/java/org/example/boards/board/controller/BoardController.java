@@ -1,16 +1,19 @@
-package org.example.boards.board;
+package org.example.boards.board.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.boards.board.BoardService;
 import org.example.boards.board.DTO.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor()
@@ -35,7 +38,7 @@ public class BoardController {
         List<CategoryDTO> categories = boardService.getCategories();
         model.addAttribute("categories", categories);
 
-        return "/jsp/list.jsp";
+        return "/jsp/list";
     }
 
     /**
@@ -57,7 +60,7 @@ public class BoardController {
             model.addAttribute("comments", comments);
         }
 
-        return "/jsp/view.jsp";
+        return "/jsp/view";
     }
 
     /**
@@ -86,19 +89,27 @@ public class BoardController {
     /**
      *
      * @param boardId 삭제할 게시물 ID (PK)
-     * @param password 삭제를 위한 체크값
-     * @param model
      * @return
      */
-    @PostMapping("view/delete")
+    @GetMapping("/delete-board")
+    public String inputForDeleteBoard(@RequestParam int boardId, Model model) {
+        model.addAttribute("boardId", boardId);
+        return "/jsp/delete";
+    }
+
+    @PostMapping("/delete-board")
     public String deleteBoard(@RequestParam int boardId,
                               @RequestParam String password,
                               Model model) {
         boolean res = boardService.deleteBoard(boardId, password);
+        if(res) {
+            model.addAttribute("msg", "게시글이 삭제되었습니다.");
+        }else {
+            model.addAttribute("msg", "삭제를 실패하였습니다.");
+        }
+        return "/jsp/delete";
 
-        if(!res) {}
 
-        return "redirect:/view?boardId=" + boardId;
     }
 
     /**
@@ -112,7 +123,7 @@ public class BoardController {
         List<CategoryDTO> categories = boardService.getCategories();
         model.addAttribute("categories", categories);
 
-        return "/jsp/write.jsp";
+        return "/jsp/write";
     }
 
     /**
@@ -122,17 +133,17 @@ public class BoardController {
      */
     @PostMapping("/insert-board")
     public String insertBoard (@Valid @ModelAttribute NewBoardDTO newBoardDTO,
-                               Model model) {
-
-        // 게시물 등록 후 받은 id
-        int boardId = boardService.insertBoard(newBoardDTO);
-
-        if(boardId==-1) {
-            model.addAttribute("errorMsg", "실패했습니다.");
-            return "/jsp/write.jsp";
+                               BindingResult bindingResult,
+                               Model model) throws Exception {
+        if (bindingResult.hasErrors()) {
+            throw new IOException(Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage());
         }
-
-        return view(boardId, model);
+        try{
+            int boardId = boardService.insertBoard(newBoardDTO);
+            return view(boardId, model);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage() + ": boardService.insertBoard() 처리 중 Exception 발생" );
+        }
     }
 
 }

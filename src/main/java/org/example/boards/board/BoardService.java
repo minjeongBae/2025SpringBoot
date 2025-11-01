@@ -3,13 +3,16 @@ package org.example.boards.board;
 import lombok.RequiredArgsConstructor;
 import org.example.boards.board.DAO.BoardRepository;
 import org.example.boards.board.DTO.*;
-import org.example.boards.board.Entity.Board;
-import org.example.boards.board.Entity.Category;
-import org.example.boards.board.Entity.Comment;
+import org.example.boards.board.Entity.*;
 import org.example.boards.board.Mapper.BoardMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor()
@@ -18,7 +21,12 @@ public class BoardService {
     final BoardRepository boardRepository;
     final BoardMapper boardMapper;
 
-    final static String key = "PASSWORD";
+    @Value("${encryptor.key}")
+    private String PASSWORD_KEY;
+
+    @Value("${file.dir}")
+    private String DIRECTORY_PATH;
+
     /**
      *
      * @param searchKey
@@ -49,11 +57,7 @@ public class BoardService {
     }
 
     private boolean isRealBoard(int boardId){
-        if (boardRepository.isRealBoard(boardId) == 1) {
-            return true;
-        }
-        //throw new NullPointerException("존재하지 않는 게시물입니다.");
-        return false;
+        return boardRepository.isRealBoard(boardId) == 1;
     }
 
     public List<CommentDTO> getComments(int boardId){
@@ -63,15 +67,64 @@ public class BoardService {
         return boardMapper.toCommentDtoList(comments);
     }
 
-    public int insertBoard(NewBoardDTO newBoardDTO) {
+    /**
+     *
+     * @param newBoardDTO
+     * @return
+     * @throws Exception Transactional 어노테이션으로 잘못되면 전체 롤백
+     */
+    @Transactional
+    public int insertBoard(NewBoardDTO newBoardDTO) throws Exception {
         Board board = boardMapper.newBoardToEntity(newBoardDTO);
-        System.out.println("getContent:"+board.getContent());
-        int res = boardRepository.insertBoard(board, key);
-        if(res==1){
-            return boardRepository.getMaxBoardId();
+        int newId = -1;
+        try{
+            boardRepository.insertBoard(board, PASSWORD_KEY);
+            newId = boardRepository.getMaxBoardId();
+
+
+            List<FileUpload> files = fileDtoToEntity(newBoardDTO.getFiles(), newId);
+            if(files != null){
+                return newId;
+            }
+            boardRepository.insertFiles(files);
+            saveFiles(newBoardDTO.getFiles());
+
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new Exception( e.getClass().getName() + ": insertBoard 처리 중 . . ",e);
         }
-        return -1;
+
+        return newId;
     }
+
+    private void saveFiles(List<MultipartFile> files) throws Exception {
+        try{
+            for(MultipartFile file : files){
+                if(file.isEmpty()) return;
+                file.transferTo(new java.io.File(DIRECTORY_PATH + file.getOriginalFilename()));
+            }
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    private List<FileUpload> fileDtoToEntity (List<MultipartFile> files, int boardId) {
+        if(files==null || files.isEmpty()) return null;
+        List<FileUpload> fileEntities = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if(file.isEmpty()) continue;
+            FileUpload newFile = new FileUpload();
+            newFile.setName(file.getOriginalFilename());
+            newFile.setPath(DIRECTORY_PATH);
+            newFile.setUuid(UUID.randomUUID().toString());
+            newFile.setBoardId(boardId);
+            fileEntities.add(newFile);
+        }
+
+        return fileEntities;
+    }
+
+
 
     public boolean insertComment(CommentDTO commentDTO) {
         if(!isRealBoard(commentDTO.getBoardId())) return false;
@@ -83,17 +136,12 @@ public class BoardService {
 
     public boolean deleteBoard(int boardId, String password){
         if(!isRealBoard(boardId)) return false;
-
-        if(!checkPw(boardId, password)) return false;
+        if(!isRightPw(boardId, password)) return false;
 
         return boardRepository.deleteBoard(boardId) == 1;
     }
 
-    private boolean checkPw(int boardId, String password){
-        // TODO
-        if(boardRepository.checkPassword(boardId, password, key) == 1) {
-            return true;
-        }
-        return false;
+    private boolean isRightPw(int boardId, String password){
+        return boardRepository.checkPassword(boardId, password, PASSWORD_KEY) == 1;
     }
 }

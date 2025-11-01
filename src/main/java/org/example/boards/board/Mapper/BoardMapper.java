@@ -34,10 +34,6 @@ public interface BoardMapper {
     List<CommentDTO> toCommentDtoList(List<Comment> entityList);
     List<Comment> toCommentList(List<CommentDTO> dtoList);
 
-
-
-    @Mapping(target = "firstFileId", expression = "java(Util.multipartFileToString(dto.getFirstFile())[0])")
-    @Mapping(target = "firstFileName", expression = "java(Util.multipartFileToString(dto.getFirstFile())[1])")
-    @Mapping(target = "firstFilePath", expression = "java(Util.multipartFileToString(dto.getFirstFile())[2])")
     Board newBoardToEntity(NewBoardDTO dto);
+
 }

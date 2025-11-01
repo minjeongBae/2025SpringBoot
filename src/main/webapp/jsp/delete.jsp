@@ -18,11 +18,11 @@
     <% if (msg != null) { %>
     <script>
         alert("<%= msg %>");
+        window.close();
     </script>
     <% } %>
 </head>
 <body>
-<%= request.getAttribute("boardId")%>
     <form action="/delete-board" method="post">
         <input type="hidden" name="boardId" value="<%= request.getAttribute("boardId")%>">
         <table>

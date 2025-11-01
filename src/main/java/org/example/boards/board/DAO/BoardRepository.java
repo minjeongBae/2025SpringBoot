@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.example.boards.board.Entity.Board;
 import org.example.boards.board.Entity.Category;
 import org.example.boards.board.Entity.Comment;
+import org.example.boards.board.Entity.FileUpload;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,7 +34,10 @@ public interface BoardRepository {
 
     int checkPassword(@Param("boardId") int boardId, @Param("password") String password, @Param("key")String key);
 
-    int insertBoard(@Param("board") Board board, @Param("key")String key);
+    void insertBoard(@Param("board") Board board, @Param("key")String key);
+    int insertFiles(@Param("files")List<FileUpload> files);
+
+
     int deleteBoard(@Param("boardId") int boardId);
    // int increaseViews(@Param("boardId") int boardId);
 }
