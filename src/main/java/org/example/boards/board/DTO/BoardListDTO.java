@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class BoardListDTO {
+    // TODO @Validate
+    // TODO @Builder
     private int boardId;
     private String title;
     private String category;

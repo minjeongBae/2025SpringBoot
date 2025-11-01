@@ -21,8 +21,9 @@
     <title>목록</title>
 </head>
 <body>
-    <h1>자유 게시판 - 목록</h1>
-
+    <a href="/" style="display: inline-block; text-decoration: none; color: inherit;">
+        <h1>자유 게시판 - 목록</h1>
+    </a>
     <form action="/list" method="get">
         등록일  <input type="date" name = "headDate" value="">
         <input type="date" name = "tailDate">
@@ -80,7 +81,7 @@
         </table>
     </div>
     <br/>
-    <button style="margin: 10px" onclick="insertBoard()">등록</button>
+    <button style="margin: 10px; width: 20% ; height: 25px" onclick="insertBoard()">등록</button>
 </body>
 <script>
     function showDetail(boardId) {

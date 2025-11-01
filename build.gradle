@@ -34,6 +34,13 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
     implementation("org.apache.tomcat.embed:tomcat-embed-jasper")
 
+    // 파일 업로드
+    implementation 'commons-io:commons-io:2.11.0'
+
+    // DTO 검증
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
@@ -49,4 +56,12 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8' // HTML 문서 문자셋도 UTF-8로 지정
 }

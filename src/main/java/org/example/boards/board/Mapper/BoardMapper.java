@@ -1,17 +1,16 @@
 package org.example.boards.board.Mapper;
 
-import org.example.boards.board.DTO.BoardListDTO;
-import org.example.boards.board.DTO.BoardViewDTO;
-import org.example.boards.board.DTO.CategoryDTO;
-import org.example.boards.board.DTO.CommentDTO;
+import org.example.boards.board.DTO.*;
 import org.example.boards.board.Entity.Board;
 import org.example.boards.board.Entity.Category;
 import org.example.boards.board.Entity.Comment;
+import org.example.boards.board.Util;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {org.example.boards.board.Util.class})
 public interface BoardMapper {
     Board toBoardForList(BoardListDTO boardListDTO);
     BoardListDTO toBoardDto(Board board);
@@ -34,4 +33,11 @@ public interface BoardMapper {
 
     List<CommentDTO> toCommentDtoList(List<Comment> entityList);
     List<Comment> toCommentList(List<CommentDTO> dtoList);
+
+
+
+    @Mapping(target = "firstFileId", expression = "java(Util.multipartFileToString(dto.getFirstFile())[0])")
+    @Mapping(target = "firstFileName", expression = "java(Util.multipartFileToString(dto.getFirstFile())[1])")
+    @Mapping(target = "firstFilePath", expression = "java(Util.multipartFileToString(dto.getFirstFile())[2])")
+    Board newBoardToEntity(NewBoardDTO dto);
 }

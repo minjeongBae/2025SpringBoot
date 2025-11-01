@@ -16,7 +16,8 @@ public interface BoardRepository {
 
     List<Board> getBoards(@Param("headDate") String headDate,
                              @Param("tailDate") String tailDate,
-                             @Param("searchWord") String searchKey);
+                             @Param("searchWord") String searchKey,
+                             @Param("category") int category);
 
     List<Category> getCategories();
 
@@ -28,9 +29,11 @@ public interface BoardRepository {
 
     int insertComment(Comment comment);
 
-    /// 아직 안씀 ////
-    int insertBoard(Board board);
-    String checkPassword(@Param("password") String password, @Param("key")String key);
+    int getMaxBoardId();
+
+    int checkPassword(@Param("boardId") int boardId, @Param("password") String password, @Param("key")String key);
+
+    int insertBoard(@Param("board") Board board, @Param("key")String key);
     int deleteBoard(@Param("boardId") int boardId);
    // int increaseViews(@Param("boardId") int boardId);
 }

@@ -12,7 +12,10 @@
             window.location.href = '/list';
         }
     </script>
-    <h1>게시판 - 보기</h1>
+    <a href="/" style="display: inline-block; text-decoration: none; color: inherit;">
+        <h1>자유 게시판 - 목록</h1>
+    </a>
+    <h2>게시판 - 보기</h2>
 
     <% if (request.getAttribute("errorMsg") != null) { %>
     <script>

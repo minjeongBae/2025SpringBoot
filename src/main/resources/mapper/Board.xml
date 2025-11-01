@@ -18,11 +18,14 @@
                BOARD.CONTENT
         FROM BOARD
         INNER JOIN CATEGORY ON CATEGORY.CD = BOARD.CATEGORY
-        WHERE CREATE_DATE <![CDATA[>=]]> IFNULL(#{headDate}, '2000-01-01')
-          AND CREATE_DATE <![CDATA[<=]]> IFNULL(#{tailDate}, '9999-01-01')
-          AND (TITLE LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%')
-               OR CONTENT LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%')
-               OR WRITER LIKE CONCAT('%',IFNULL(#{searchWord}, ''),'%'));
+        WHERE CREATE_DATE &gt;= #{headDate}
+          AND CREATE_DATE &lt;= #{tailDate}
+          AND (TITLE LIKE CONCAT('%',#{searchWord},'%')
+               OR CONTENT LIKE CONCAT('%',#{searchWord},'%')
+               OR WRITER LIKE CONCAT('%',#{searchWord},'%'))
+        <if test="category!=null and category != 0">
+            AND BOARD.CATEGORY = #{category}
+        </if>
     </select>
 
     <select id="getCategories" resultType="org.example.boards.board.Entity.Category">
@@ -74,20 +77,16 @@
         VALUES (#{boardId}, "테스트", #{content}, NOW())
     </insert>
 
-    <insert id="insertBoard">
-        INSERT INTO BOARD (WRITER, CONTENT, CREATE_DATE, TITLE, CATEGORY)
-        VALUES (#{writer}, #{content}, NOW(), #{title}, #{category})
-    </insert>
-
     <delete id="deleteBoard">
-        DELETE FROM BOARD WHERE BOARD_ID = #{boardId};
+        DELETE FROM BOARD WHERE BOARD_ID = #{boardId}
     </delete>
 
-    <select id="checkPassword" resultType="String">
-        SELECT CASE WHEN COUNT(1) > 0 THEN 'Y'
-                    ELSE 'N' END AS RESULT
-        FROM USER
-        WHERE PASSWORD = HEX(AES_ENCRYPT(#{password}, #{key}));
+    <select id="checkPassword" resultType="int">
+        SELECT CASE WHEN COUNT(1) > 0 THEN 1
+                    ELSE 0 END AS RESULT
+        FROM BOARD
+        WHERE BOARD_ID = #{boardId}
+         AND PASSWORD = HEX(AES_ENCRYPT(#{password}, #{key}));
     </select>
 
     <update id="increaseViews">
@@ -95,4 +94,27 @@
         SET VIEWS = VIEWS+1
         WHERE BOARD_ID = #{boardId}
     </update>
+
+    <insert id="insertBoard" useGeneratedKeys="true" keyProperty="board.boardId" >
+        INSERT INTO BOARD (
+            TITLE, CONTENT, CREATE_DATE,
+            WRITER, CATEGORY, PASSWORD,
+            FIRST_FILE_ID,
+            FIRST_FILE_NAME,
+            FIRST_FILE_PATH
+        )
+        VALUES (
+                   #{board.title}, #{board.content}, NOW(),
+                   #{board.writer}, #{board.category}, HEX(AES_ENCRYPT(#{board.password}, #{key})),
+                   #{board.firstFileId}, #{board.firstFileName}, #{board.firstFilePath}
+               )
+    </insert>
+
+    <select id="getMaxBoardId" resultType="int">
+        SELECT BOARD_ID
+        FROM BOARD
+        ORDER BY BOARD_ID DESC
+        LIMIT 1
+    </select>
+
 </mapper>
