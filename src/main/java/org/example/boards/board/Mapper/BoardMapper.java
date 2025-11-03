@@ -4,6 +4,7 @@ import org.example.boards.board.DTO.*;
 import org.example.boards.board.Entity.Board;
 import org.example.boards.board.Entity.Category;
 import org.example.boards.board.Entity.Comment;
+import org.example.boards.board.Entity.FileData;
 import org.example.boards.board.Util;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,5 +36,7 @@ public interface BoardMapper {
     List<Comment> toCommentList(List<CommentDTO> dtoList);
 
     Board newBoardToEntity(NewBoardDTO dto);
+
+    List<FileDTO> fileDataToFileDTO(List<FileData> dtoList);
 
 }

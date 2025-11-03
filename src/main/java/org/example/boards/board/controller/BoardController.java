@@ -4,6 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.boards.board.BoardService;
 import org.example.boards.board.DTO.*;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -52,12 +56,14 @@ public class BoardController {
                        Model model) {
         BoardViewDTO boardViewDTO = boardService.getBoardView(boardId);
         List<CommentDTO> comments = boardService.getComments(boardId);
+        List<FileDTO> files = boardService.getFiles(boardId);
 
-        if(boardViewDTO==null || comments==null) {
+        if(boardViewDTO==null) {
             model.addAttribute("errorMsg", "존재하지 않는 게시물입니다.");
         } else {
             model.addAttribute("board", boardViewDTO);
             model.addAttribute("comments", comments);
+            model.addAttribute("files", files);
         }
 
         return "/jsp/view";
@@ -133,17 +139,35 @@ public class BoardController {
      */
     @PostMapping("/insert-board")
     public String insertBoard (@Valid @ModelAttribute NewBoardDTO newBoardDTO,
-                               BindingResult bindingResult,
-                               Model model) throws Exception {
+                               BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
             throw new IOException(Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage());
         }
         try{
             int boardId = boardService.insertBoard(newBoardDTO);
-            return view(boardId, model);
+            return "redirect:/view?boardId=" + boardId;
         } catch (Exception e) {
             throw new Exception(e.getMessage() + ": boardService.insertBoard() 처리 중 Exception 발생" );
         }
+    }
+
+    @PostMapping("/download")
+    public ResponseEntity<Resource> downloadFile (@ModelAttribute FileDTO file) throws Exception {
+        Resource resource = boardService.getFile(file);
+
+        // 파일 다운로드
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+
+        /**
+         * 파일 보여주기
+         *
+         *  return ResponseEntity.ok()
+         *                 .contentType(MediaType.IMAGE_PNG)
+         *                 .body(resource);
+         */
     }
 
 }

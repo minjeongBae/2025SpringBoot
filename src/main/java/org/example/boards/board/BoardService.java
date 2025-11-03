@@ -6,10 +6,14 @@ import org.example.boards.board.DTO.*;
 import org.example.boards.board.Entity.*;
 import org.example.boards.board.Mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +54,15 @@ public class BoardService {
         return boardMapper.toCategoryDtoList(categories);
     }
 
+    public List<FileDTO> getFiles(int boardId) {
+        List<FileData> files = boardRepository.getFiles(boardId);
+        return boardMapper.fileDataToFileDTO(files);
+    }
+
+    public Resource getFile(FileDTO file) throws MalformedURLException {
+        return new UrlResource("file:" + DIRECTORY_PATH + file.getUuid() + "_" + file.getName());
+    }
+
     public BoardViewDTO getBoardView(int boardId){
         if(!isRealBoard(boardId)) return null;
         Board board = boardRepository.getBoard(boardId);
@@ -81,39 +94,40 @@ public class BoardService {
             boardRepository.insertBoard(board, PASSWORD_KEY);
             newId = boardRepository.getMaxBoardId();
 
-
-            List<FileUpload> files = fileDtoToEntity(newBoardDTO.getFiles(), newId);
-            if(files != null){
-                return newId;
+            List<FileData> files = fileDtoToEntity(newBoardDTO.getFiles(), newId);
+            if(files!=null && !files.isEmpty()){
+                boardRepository.insertFiles(files);
+                saveFiles(newBoardDTO.getFiles(), files);
             }
-            boardRepository.insertFiles(files);
-            saveFiles(newBoardDTO.getFiles());
-
+            return newId;
         } catch (Exception e){
             e.printStackTrace();
             throw new Exception( e.getClass().getName() + ": insertBoard 처리 중 . . ",e);
         }
-
-        return newId;
     }
 
-    private void saveFiles(List<MultipartFile> files) throws Exception {
+    private void saveFiles(List<MultipartFile> files, List<FileData> fileEntities) throws Exception {
         try{
             for(MultipartFile file : files){
                 if(file.isEmpty()) return;
-                file.transferTo(new java.io.File(DIRECTORY_PATH + file.getOriginalFilename()));
+                for(FileData fileEntity : fileEntities){
+                    if(file.getOriginalFilename().equals(fileEntity.getName())) {
+                        file.transferTo(new java.io.File(DIRECTORY_PATH + fileEntity.getUuid()+"_"+file.getOriginalFilename()));
+                        break;
+                    }
+                }
             }
         }catch (Exception e){
             throw new Exception(e.getMessage());
         }
     }
 
-    private List<FileUpload> fileDtoToEntity (List<MultipartFile> files, int boardId) {
+    private List<FileData> fileDtoToEntity (List<MultipartFile> files, int boardId) {
         if(files==null || files.isEmpty()) return null;
-        List<FileUpload> fileEntities = new ArrayList<>();
+        List<FileData> fileEntities = new ArrayList<>();
         for (MultipartFile file : files) {
             if(file.isEmpty()) continue;
-            FileUpload newFile = new FileUpload();
+            FileData newFile = new FileData();
             newFile.setName(file.getOriginalFilename());
             newFile.setPath(DIRECTORY_PATH);
             newFile.setUuid(UUID.randomUUID().toString());

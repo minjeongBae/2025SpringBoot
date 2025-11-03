@@ -72,6 +72,12 @@
         WHERE BOARD_ID = #{boardId}
     </select>
 
+    <select id="getFiles" resultType="org.example.boards.board.Entity.FileData">
+        SELECT NAME, PATH, UUID
+        FROM FILE
+        WHERE BOARD_ID =  #{boardId}
+    </select>
+
     <insert id="insertComment">
         INSERT INTO COMMENT (BOARD_ID, WRITER, CONTENT, CREATE_DATE)
         VALUES (#{boardId}, "테스트", #{content}, NOW())
